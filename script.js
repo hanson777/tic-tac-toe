@@ -32,18 +32,18 @@ const GameController = function (playerOneName = "Player One", playerTwoName = "
     const board = Gameboard();
 
     const players = [
-        {name: playerOneName, symbol: 0},
-        {name: playerTwoName, symbol: 1}
+        {name: playerOneName, symbol: "O"},
+        {name: playerTwoName, symbol: "X"}
     ]
-
-    const getPlayers = () => players;
 
     let activePlayer = players[0];
 
+    const getActivePlayer = () => activePlayer
+
     const playRound = (row, col) => {
         board.clickCell(row, col, activePlayer);
-        activePlayer = (activePlayer = players[0]) ? (activePlayer = players[1]) : (activePlayer = players[0]);
-
+        activePlayer = activePlayer === players[0] ? players[1] : players[0];
+        checkBoard();
     }
 
     const checkBoard = () => {
@@ -56,7 +56,7 @@ const GameController = function (playerOneName = "Player One", playerTwoName = "
         }
 
         // Cols 
-        for(let i = 1; i < 3; i++){
+        for(let i = 0; i < 3; i++){
             if((board.getBoard()[0][i].getValue() === board.getBoard()[1][i].getValue()) && board.getBoard()[1][i].getValue() === board.getBoard()[2][i].getValue()){
                 endGame(board.getBoard()[0][i].getValue());
                 return;
@@ -64,12 +64,12 @@ const GameController = function (playerOneName = "Player One", playerTwoName = "
         }
 
         // Diagonal 
-        if((board.getBoard()[0][0].getValue() === board.getBoard()[1][1].getValue() && board.getBoard()[2][2].getValue())){
+        if((board.getBoard()[0][0].getValue() === board.getBoard()[1][1].getValue()) && board.getBoard()[2][2].getValue() === board.getBoard()[1][1].getValue()){
             endGame(board.getBoard()[0][0].getValue());
             return;
         }
 
-        if((board.getBoard()[0][2].getValue() === board.getBoard()[1][1].getValue() && board.getBoard()[2][0].getValue())){
+        if((board.getBoard()[0][2].getValue() === board.getBoard()[1][1].getValue()) && board.getBoard()[2][0].getValue() === board.getBoard()[1][1].getValue()){
             endGame(board.getBoard()[0][2].getValue());
             return;
         }
@@ -77,23 +77,37 @@ const GameController = function (playerOneName = "Player One", playerTwoName = "
     }
 
     const endGame = (player) => {
-        console.log(`${player.name} has won the game!`)
-    }
+    setTimeout(() => {
+        alert(`${player.name} has won the game!`);
+    }, 0);
+}
 
-    return {board, getPlayers, activePlayer, playRound, checkBoard, endGame}
+    return {board, getActivePlayer, playRound, checkBoard, endGame}
 }
 
 const ScreenController = function () {
 
-    for(let i = 0; i < 9; i++){
-        document.querySelector(".container").appendChild(document.createElement("button"));
+    const game = GameController();
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            const button = document.createElement("button");
+            button.classList.add("button")
+            button.setAttribute("data-row", i);
+            button.setAttribute("data-col", j)
+            document.querySelector(".container").appendChild(button);
+        }
     }
 
-    document.addEventListener("click", () => {
-        
+    document.addEventListener ("click", (event) => {
+        const target = event.target;
+        if (target.classList.contains("button") && !target.classList.contains("clicked")) {
+            target.textContent = game.getActivePlayer().symbol;
+            target.classList.add("clicked");
+            game.playRound(target.dataset.row, target.dataset.col);
+        }
     })
-
 }
 
-const screen = ScreenController();
+const game = ScreenController();
 

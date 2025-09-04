@@ -25,4 +25,5 @@ button {
     flex-direction: column;
     width: calc(500px/3);
     height: calc(500px/3);
+    font-size: 100px;
 }
