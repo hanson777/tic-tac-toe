@@ -77,18 +77,23 @@ const GameController = function (playerOneName = "Player One", playerTwoName = "
     }
 
     const endGame = (player) => {
-        console.log(`${player} has won the game!`)
+        console.log(`${player.name} has won the game!`)
     }
 
     return {board, getPlayers, activePlayer, playRound, checkBoard, endGame}
 }
 
-const game = GameController();
-game.playRound(0,0);
-game.playRound(2,2);
-game.playRound(0,1);
-game.playRound(2,1);
-game.playRound(0,2);
-game.checkBoard();
+const ScreenController = function () {
 
+    for(let i = 0; i < 9; i++){
+        document.querySelector(".container").appendChild(document.createElement("button"));
+    }
+
+    document.addEventListener("click", () => {
+        
+    })
+
+}
+
+const screen = ScreenController();
 
