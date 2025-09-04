@@ -12,7 +12,6 @@ const Gameboard = function () {
 
     const clickCell = (row, column, player) => {
         board[row][column].setValue(player);
-
     }
 
     return {getBoard, clickCell};
@@ -28,7 +27,7 @@ const Cell = function () {
     return {setValue, getValue}
 }
 
-const GameController = function (playerOneName = "Player One", playerTwoName = "Player Two") {
+const GameController = function (playerOneName = "Player One", playerTwoName = "Player Two", start) {
     const board = Gameboard();
 
     const players = [
@@ -47,29 +46,48 @@ const GameController = function (playerOneName = "Player One", playerTwoName = "
     }
 
     const checkBoard = () => {
+
         // Rows 
-        for(let i = 0; i < 3; i++){
-            if((board.getBoard()[i][1].getValue() === board.getBoard()[i][0].getValue()) && board.getBoard()[i][1].getValue() === board.getBoard()[i][2].getValue()){
-                endGame(board.getBoard()[i][0].getValue());
+        for (let i = 0; i < 3; i++) {
+            const row = board.getBoard()[i];
+            if (
+                row[0].getValue() !== null &&
+                row[0].getValue() === row[1].getValue() &&
+                row[1].getValue() === row[2].getValue()
+            ) {
+                endGame(row[0].getValue());
                 return;
             }
         }
 
+
         // Cols 
-        for(let i = 0; i < 3; i++){
-            if((board.getBoard()[0][i].getValue() === board.getBoard()[1][i].getValue()) && board.getBoard()[1][i].getValue() === board.getBoard()[2][i].getValue()){
+        for (let i = 0; i < 3; i++) {
+            if (
+                board.getBoard()[0][i].getValue() !== null &&
+                board.getBoard()[0][i].getValue() === board.getBoard()[1][i].getValue() &&
+                board.getBoard()[1][i].getValue() === board.getBoard()[2][i].getValue()
+            ) {
                 endGame(board.getBoard()[0][i].getValue());
                 return;
             }
         }
 
-        // Diagonal 
-        if((board.getBoard()[0][0].getValue() === board.getBoard()[1][1].getValue()) && board.getBoard()[2][2].getValue() === board.getBoard()[1][1].getValue()){
+        // Diagonals
+        if (
+            board.getBoard()[0][0].getValue() !== null &&
+            board.getBoard()[0][0].getValue() === board.getBoard()[1][1].getValue() &&
+            board.getBoard()[1][1].getValue() === board.getBoard()[2][2].getValue()
+        ) {
             endGame(board.getBoard()[0][0].getValue());
             return;
         }
 
-        if((board.getBoard()[0][2].getValue() === board.getBoard()[1][1].getValue()) && board.getBoard()[2][0].getValue() === board.getBoard()[1][1].getValue()){
+        if (
+            board.getBoard()[0][2].getValue() !== null &&
+            board.getBoard()[0][2].getValue() === board.getBoard()[1][1].getValue() &&
+            board.getBoard()[1][1].getValue() === board.getBoard()[2][0].getValue()
+        ) {
             endGame(board.getBoard()[0][2].getValue());
             return;
         }
@@ -79,6 +97,8 @@ const GameController = function (playerOneName = "Player One", playerTwoName = "
     const endGame = (player) => {
     setTimeout(() => {
         alert(`${player.name} has won the game!`);
+        document.querySelector(".container").innerHTML = "";
+        start();
     }, 0);
 }
 
@@ -87,27 +107,30 @@ const GameController = function (playerOneName = "Player One", playerTwoName = "
 
 const ScreenController = function () {
 
-    const game = GameController();
+    const start = () => {
 
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-            const button = document.createElement("button");
-            button.classList.add("button")
-            button.setAttribute("data-row", i);
-            button.setAttribute("data-col", j)
-            document.querySelector(".container").appendChild(button);
+        const game = GameController("P1", "P2", start);
+
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3; j++) {
+                const button = document.createElement("button");
+                button.classList.add("button")
+                document.querySelector(".container").appendChild(button);
+
+                button.addEventListener ("click", () => {
+                   if (!button.classList.contains("clicked")) {
+                        button.textContent = game.getActivePlayer().symbol;
+                        button.classList.add("clicked");
+                        game.playRound(i, j);
+                   }
+                });
+            }
         }
     }
 
-    document.addEventListener ("click", (event) => {
-        const target = event.target;
-        if (target.classList.contains("button") && !target.classList.contains("clicked")) {
-            target.textContent = game.getActivePlayer().symbol;
-            target.classList.add("clicked");
-            game.playRound(target.dataset.row, target.dataset.col);
-        }
-    })
+    return {start};
 }
 
 const game = ScreenController();
+game.start();
 
