@@ -92,17 +92,40 @@ const GameController = function (playerOneName = "Player One", playerTwoName = "
             return;
         }
 
+        let draw = true;
+
+        for(let i = 0; i < 3; i++){
+            for(let j = 0; j < 3; j++){
+                if(board.getBoard()[i][j].getValue() === null){
+                    draw = false;
+                }
+            }
+        }
+
+        if(draw) {
+            drawGame();
+        }
     }
 
     const endGame = (player) => {
-    setTimeout(() => {
-        alert(`${player.name} has won the game!`);
-        document.querySelector(".container").innerHTML = "";
-        start();
-    }, 0);
-}
+        setTimeout(() => {
+            alert(`${player.name} has won the game!`);
+            document.querySelector(".container").innerHTML = "";
+            start();
+        }, 0);
+    
+    }
 
-    return {board, getActivePlayer, playRound, checkBoard, endGame}
+    const drawGame = () => {
+        setTimeout(() => {
+            alert("This game is a draw!");
+            document.querySelector(".container").innerHTML = "";
+            start();
+        }, 0);
+    }
+
+
+    return {board, getActivePlayer, playRound, checkBoard}
 }
 
 const ScreenController = function () {
